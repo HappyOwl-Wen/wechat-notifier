@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WeChatNotifier.Settings.Pages.NotificationsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WeChatNotifier.Settings">
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource PageStack}">
+            <TextBlock Margin="1,0,0,12" Style="{StaticResource TitleTextBlockStyle}" Text="通知" />
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="内容" />
+            <local:SettingsCard
+                Description="通知里显示消息文字。关闭后只显示会话名和「新消息」（也不显示图片）。"
+                Glyph="&#xE8BD;"
+                Header="显示消息内容">
+                <ToggleSwitch IsOn="{x:Bind VM.MessagePreview, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="只在微信窗口留在屏幕上（可以被别的窗口挡住，但不能最小化或关到托盘）、该会话正打开着时有：图片是从屏幕上复制的。需要「显示消息内容」和「允许临时图片缓存」。"
+                Glyph="&#xE722;"
+                Header="显示图片预览">
+                <ToggleSwitch
+                    IsEnabled="{x:Bind VM.ImagePreviewAvailable, Mode=OneWay}"
+                    IsOn="{x:Bind VM.ImagePreview, Mode=TwoWay}"
+                    Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="通知左侧显示联系人或群的头像：微信窗口出现在屏幕上时复制并记住（程序重启后仍然记得，30 天没再见到就删除）；还没见过的会话显示名字的首字。"
+                Glyph="&#xE77B;"
+                Header="显示头像">
+                <ToggleSwitch IsOn="{x:Bind VM.Avatars, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="关闭后不再通知群聊消息。按微信预览里的「发送者: 内容」识别群聊；微信在托盘里时，只认得已经见过两位不同发送者的群。"
+                Glyph="&#xE716;"
+                Header="群聊消息">
+                <ToggleSwitch IsOn="{x:Bind VM.GroupMessages, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="和微信一样，默认不通知设了「消息免打扰」的会话。"
+                Glyph="&#xE74F;"
+                Header="消息免打扰的会话也通知">
+                <ToggleSwitch IsOn="{x:Bind VM.NotifyMutedConversations, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="提醒方式" />
+            <local:SettingsCard
+                Description="通知顶部显示「微信」和微信的图标（从电脑上的微信程序读取），而不是「WeChat Notifier」。Windows 每次登录只读一次应用名和图标，所以更改在下次登录 Windows 后生效。"
+                Glyph="&#xE71D;"
+                Header="以「微信」的名义显示">
+                <ToggleSwitch IsOn="{x:Bind VM.ShowAsWeChat, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard Description="Windows 的「即时消息」提示音。" Glyph="&#xE767;" Header="通知声音">
+                <ToggleSwitch IsOn="{x:Bind VM.Sound, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard Description="横幅在屏幕上停留多久；之后仍在通知中心里。" Glyph="&#xE916;" Header="通知停留时间">
+                <ComboBox MinWidth="180" SelectedIndex="{x:Bind VM.DurationIndex, Mode=TwoWay}">
+                    <x:String>默认（约 5 秒）</x:String>
+                    <x:String>较长（约 25 秒）</x:String>
+                </ComboBox>
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="打开微信并切到这条通知的会话；关闭后只把微信带到前台。"
+                Glyph="&#xE8A7;"
+                Header="点击通知时打开对应会话">
+                <ToggleSwitch IsOn="{x:Bind VM.OpenConversationOnClick, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="横幅、锁屏显示、勿扰模式和优先级由 Windows 管理。"
+                Glyph="&#xE713;"
+                Header="Windows 通知设置">
+                <HyperlinkButton Click="OnOpenWindowsSettings" Content="打开" />
+            </local:SettingsCard>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WeChatNotifier.Settings.Pages.AdvancedPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WeChatNotifier.Settings">
+    <Page.Resources>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Style>
+        <Style x:Key="Value" TargetType="TextBlock">
+            <Setter Property="IsTextSelectionEnabled" Value="True" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource PageStack}">
+            <TextBlock Margin="1,0,0,12" Style="{StaticResource TitleTextBlockStyle}" Text="高级" />
+
+            <InfoBar
+                IsClosable="False"
+                IsOpen="{x:Bind Status.NotifierMissing, Mode=OneWay}"
+                Message="后台程序没有在运行，所以现在不会有微信通知。设置会保存，启动后生效。"
+                Severity="Warning"
+                Title="WeChat Notifier 没有运行">
+                <InfoBar.ActionButton>
+                    <Button Click="OnStartNotifier" Content="启动" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="状态（每 2 秒刷新，不含任何消息内容）" />
+            <Border
+                Padding="16,12"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource ControlCornerRadius}">
+                <Grid ColumnSpacing="24" RowSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+                        <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{StaticResource Label}" Text="微信进程" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.WeChatProcess, Mode=OneWay}" />
+                    <TextBlock Grid.Row="1" Style="{StaticResource Label}" Text="微信主窗口" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.WeChatWindow, Mode=OneWay}" />
+                    <TextBlock Grid.Row="2" Style="{StaticResource Label}" Text="UI Automation" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.UiAutomation, Mode=OneWay}" />
+                    <TextBlock Grid.Row="3" Style="{StaticResource Label}" Text="消息监听" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Listener, Mode=OneWay}" />
+                    <TextBlock Grid.Row="4" Style="{StaticResource Label}" Text="最后一次触发" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.LastTrigger, Mode=OneWay}" />
+                    <TextBlock Grid.Row="5" Style="{StaticResource Label}" Text="最后一条消息" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.LastMessage, Mode=OneWay}" />
+                    <TextBlock Grid.Row="6" Style="{StaticResource Label}" Text="最后通知延迟" />
+                    <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Latency, Mode=OneWay}" />
+                    <TextBlock Grid.Row="7" Style="{StaticResource Label}" Text="丢弃的重复消息" />
+                    <TextBlock Grid.Row="7" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Duplicates, Mode=OneWay}" />
+                    <TextBlock Grid.Row="8" Style="{StaticResource Label}" Text="通知" />
+                    <TextBlock Grid.Row="8" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Notifications, Mode=OneWay}" />
+                    <TextBlock Grid.Row="9" Style="{StaticResource Label}" Text="Windows 通知" />
+                    <TextBlock Grid.Row="9" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.WindowsNotifications, Mode=OneWay}" />
+                    <TextBlock Grid.Row="10" Style="{StaticResource Label}" Text="当前内存" />
+                    <TextBlock Grid.Row="10" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Memory, Mode=OneWay}" />
+                    <TextBlock Grid.Row="11" Style="{StaticResource Label}" Text="已运行" />
+                    <TextBlock Grid.Row="11" Grid.Column="1" Style="{StaticResource Value}" Text="{x:Bind Status.Uptime, Mode=OneWay}" />
+                </Grid>
+            </Border>
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="操作" />
+            <local:SettingsCard Description="发一条测试通知，检查 Windows 通知是否正常。" Glyph="&#xEA8F;" Header="测试通知">
+                <Button Click="OnTest" Content="发送" IsEnabled="{x:Bind Status.NotifierRunning, Mode=OneWay}" />
+            </local:SettingsCard>
+            <local:SettingsCard
+                Description="出现问题时重新开始监听。微信在托盘里时，会话名要在打开一次微信窗口后才恢复。"
+                Glyph="&#xE72C;"
+                Header="重新启动监听">
+                <Button Click="OnRestart" Content="重新启动" IsEnabled="{x:Bind Status.NotifierRunning, Mode=OneWay}" />
+            </local:SettingsCard>
+            <local:SettingsCard Description="复制上面的状态（纯文本，不含消息内容），方便反馈问题。" Glyph="&#xE8C8;" Header="复制诊断信息">
+                <Button Click="OnCopy" Content="复制" IsEnabled="{x:Bind Status.NotifierRunning, Mode=OneWay}" />
+            </local:SettingsCard>
+
+            <InfoBar x:Name="Result" IsOpen="False" Severity="Success" />
+
+            <TextBlock
+                Margin="1,24,0,0"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}">
+                <Run Text="WeChat Notifier" />
+                <Run Text="{x:Bind Status.Version, Mode=OneWay}" />
+                <Run Text="· 个人使用 · 本地处理，不联网" />
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

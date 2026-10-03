@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>WeChatNotifier.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- xunit.v3 runs on Microsoft.Testing.Platform (opted in via global.json): dotnet test, or run the exe. -->
+    <PackageReference Include="xunit.v3" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\WeChatNotifier.Core\WeChatNotifier.Core.csproj" />
+    <ProjectReference Include="..\..\src\WeChatNotifier.Diagnostics\WeChatNotifier.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\src\WeChatNotifier.Listener\WeChatNotifier.Listener.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+TestResults/
+
+# local toolchain (portable .NET SDK, NuGet package cache)
+.tools/
+
+# build output: the installer (published as a GitHub release instead)
+artifacts/
+
+# inspector logs: redacted, but still derived from a real WeChat session - never commit
+inspector-output/

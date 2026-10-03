@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>WeChatInspector</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Interop.UIAutomationClient" Version="10.19041.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- WeChatUiProfile / PreviewText and the redactor are shared with the listener. -->
+    <ProjectReference Include="..\..\src\WeChatNotifier.Listener\WeChatNotifier.Listener.csproj" />
+    <ProjectReference Include="..\..\src\WeChatNotifier.Diagnostics\WeChatNotifier.Diagnostics.csproj" />
+  </ItemGroup>
+
+</Project>

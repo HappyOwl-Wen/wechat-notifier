@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Settings window (PHASE 5, spec §18): WinUI 3 with Fluent controls, follows the Windows theme. A separate
+       process that exists only while the window is open, so the background notifier never loads a UI framework.
+       Talks to the notifier through local window messages (ControlProtocol); no network. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>WeChatNotifier.Settings</RootNamespace>
+    <AssemblyName>WeChatNotifier.Settings</AssemblyName>
+    <Version>0.6.4</Version>
+    <AssemblyTitle>WeChat Notifier 设置</AssemblyTitle>
+    <Product>WeChat Notifier</Product>
+    <Company>WeChat Notifier</Company>
+    <ApplicationIcon>..\WeChatNotifier.App\Assets\AppIcon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <UseWinUI>true</UseWinUI>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <!-- Unpackaged, framework-dependent on the installed Windows App Runtime (the same one the notifier uses). -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <!-- Own Main: one settings window per session (see Program.cs). -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Windows App SDK 2.5.1 components: WinUI plus what it builds on. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.12" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WeChatNotifier.Core\WeChatNotifier.Core.csproj" />
+    <!-- Start-with-Windows registration: applied here only while the notifier is not running. -->
+    <Compile Include="..\WeChatNotifier.App\StartupRegistration.cs" Link="Shared\StartupRegistration.cs" />
+    <Content Include="..\WeChatNotifier.App\Assets\AppIcon.ico" Link="AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

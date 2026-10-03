@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WeChatNotifier.Settings.Pages.PrivacyPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WeChatNotifier.Settings">
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource PageStack}">
+            <TextBlock Margin="1,0,0,12" Style="{StaticResource TitleTextBlockStyle}" Text="隐私" />
+
+            <InfoBar
+                IsClosable="False"
+                IsOpen="True"
+                Message="所有处理都在这台电脑上完成：不联网、不上传，不注入或修改微信，也不保存聊天记录。消息只在内存里经过，交给 Windows 显示通知后就不再保留。"
+                Severity="Informational" />
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="图片" />
+            <local:SettingsCard
+                Description="Windows 只能从文件显示通知里的头像和图片，所以会临时写到本机的缓存文件夹：图片在通知撤回或过期后删除；头像保留到 30 天没有再见到这个会话为止，这样重启后、微信最小化时通知里也是真头像。关闭后立即清空，只用首字头像。"
+                Glyph="&#xE8B7;"
+                Header="允许临时图片缓存">
+                <ToggleSwitch IsOn="{x:Bind VM.StoreImageCache, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard Description="删除缓存文件夹里的所有图片和记住的头像。通知中心里已有的通知会失去图片；之后的通知先用首字头像，直到微信窗口再次出现在屏幕上。" Glyph="&#xE74D;" Header="清除图片缓存">
+                <Button Click="OnClearCache" Content="立即清除" />
+            </local:SettingsCard>
+
+            <TextBlock Style="{StaticResource SectionHeader}" Text="日志" />
+            <local:SettingsCard
+                Description="记录更多读取过程的细节（时间和数量），用于排查问题。日志从不包含会话名、消息内容或图片。"
+                Glyph="&#xE9D9;"
+                Header="调试日志">
+                <ToggleSwitch IsOn="{x:Bind VM.DebugLogging, Mode=TwoWay}" Style="{StaticResource CardToggle}" />
+            </local:SettingsCard>
+            <local:SettingsCard Description="%LOCALAPPDATA%\WeChatNotifier\logs，每个文件最大 1 MB，最多 3 个。" Glyph="&#xE8B7;" Header="日志文件夹">
+                <Button Click="OnOpenLogs" Content="打开" />
+            </local:SettingsCard>
+
+            <InfoBar x:Name="Result" IsOpen="False" Severity="Success" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

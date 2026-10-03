@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Installer (PHASE 6): one exe that installs WeChat Notifier for the current user (no admin rights) into
+       %LOCALAPPDATA%\Programs\WeChatNotifier, on any Windows 10 1809+ / 11 without anything installed first:
+       it targets the .NET Framework 4.7.2 built into those Windows versions, and carries the rest —
+       the program files with their own .NET runtime (PayloadZip) and the Windows App Runtime packages
+       (RuntimeMsixDir), both passed in by scripts\package.ps1. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>WeChatNotifier.Setup</RootNamespace>
+    <AssemblyName>WeChatNotifierSetup</AssemblyName>
+    <Version>0.8.0</Version>
+    <AssemblyTitle>WeChat Notifier 安装程序</AssemblyTitle>
+    <Product>WeChat Notifier</Product>
+    <Company>WeChat Notifier</Company>
+    <ApplicationIcon>..\WeChatNotifier.App\Assets\AppIcon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Part of the .NET Framework; not referenced by default. -->
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Windows.Forms" />
+    <Using Remove="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared with the notifier (where the files go, how to stop it, the start-with-Windows entry). -->
+    <Compile Include="..\WeChatNotifier.Core\Configuration\InstallLayout.cs" Link="Shared\InstallLayout.cs" />
+    <Compile Include="..\WeChatNotifier.Core\Configuration\ControlProtocol.cs" Link="Shared\ControlProtocol.cs" />
+    <Compile Include="..\WeChatNotifier.Core\Configuration\StartupCommand.cs" Link="Shared\StartupCommand.cs" />
+    <Compile Include="..\WeChatNotifier.App\StartupRegistration.cs" Link="Shared\StartupRegistration.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PayloadZip)' != ''">
+    <EmbeddedResource Include="$(PayloadZip)" LogicalName="payload.zip" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeMsixDir)' != ''">
+    <EmbeddedResource Include="$(RuntimeMsixDir)\*.msix" LogicalName="runtime/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

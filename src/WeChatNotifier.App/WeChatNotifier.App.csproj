@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- WeChat Notifier, the background app (PHASE 4): no console window, no main window; a notification-area icon,
+       autostart, listener + Windows notifications. The tray is plain Win32 (no WinForms/WPF), so the process that
+       idles all day stays small. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>WeChatNotifier.App</RootNamespace>
+    <AssemblyName>WeChatNotifier</AssemblyName>
+    <Version>0.8.0</Version>
+    <!-- File description and product name: what Task Manager (processes, Startup apps) shows. -->
+    <AssemblyTitle>WeChat Notifier</AssemblyTitle>
+    <Product>WeChat Notifier</Product>
+    <Company>WeChat Notifier</Company>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Footprint: no ICU, no background GC thread. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <!-- Windows App SDK: unpackaged, framework-dependent on the installed Windows App Runtime; the SDK's
+         auto-initializer is off (it would show a dialog and exit when the runtime is missing). -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WeChatNotifier.Listener\WeChatNotifier.Listener.csproj" />
+    <ProjectReference Include="..\WeChatNotifier.Notifications\WeChatNotifier.Notifications.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The icon is compiled into the executable (ApplicationIcon); not shipped as a file. -->
+    <Content Remove="Assets\**" />
+    <None Remove="Assets\**" />
+  </ItemGroup>
+
+</Project>

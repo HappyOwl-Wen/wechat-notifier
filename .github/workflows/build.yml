@@ -1,0 +1,61 @@
+# Builds, tests and packages on every push; a version tag (v0.8.0, ...) also publishes the installer as a release.
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build WeChatNotifier.slnx -c Release
+
+      - name: Test
+        run: dotnet test --project tests/WeChatNotifier.Tests -c Release --no-build
+
+      - name: Package the installer
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WeChatNotifierSetup
+          path: artifacts/WeChatNotifierSetup-*.exe
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: WeChatNotifierSetup
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "${{ github.ref_name }}" WeChatNotifierSetup-*.exe
+          --repo "${{ github.repository }}"
+          --title "WeChat Notifier ${{ github.ref_name }}"
+          --notes "下载下面 Assets 里的 WeChatNotifierSetup-*.exe，双击即可安装，不需要事先安装任何东西。每个版本的变化见 CHANGELOG.md。"

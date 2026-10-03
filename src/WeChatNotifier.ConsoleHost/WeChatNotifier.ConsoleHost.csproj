@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Console host: prints every detected message and shows it as a Windows notification (PHASE 1 + 2).
+       Replaced by the tray app in PHASE 4; stays as the diagnostic host. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>WeChatNotifier.ConsoleHost</RootNamespace>
+    <AssemblyName>WeChatNotifier.ConsoleHost</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Footprint: no ICU, no background GC thread. Chat text is plain UTF-16 and compared ordinally. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <!-- Windows App SDK: unpackaged, framework-dependent on the installed Windows App Runtime. The SDK's
+         auto-initializer is off because it shows a dialog and exits when the runtime is missing;
+         WeChatNotifier.Notifications initializes it itself and degrades to console-only output. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WeChatNotifier.Listener\WeChatNotifier.Listener.csproj" />
+    <ProjectReference Include="..\WeChatNotifier.Notifications\WeChatNotifier.Notifications.csproj" />
+  </ItemGroup>
+
+</Project>

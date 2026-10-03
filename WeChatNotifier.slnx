@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WeChatNotifier.Core/WeChatNotifier.Core.csproj" />
+    <Project Path="src/WeChatNotifier.Diagnostics/WeChatNotifier.Diagnostics.csproj" />
+    <Project Path="src/WeChatNotifier.Listener/WeChatNotifier.Listener.csproj" />
+    <Project Path="src/WeChatNotifier.Notifications/WeChatNotifier.Notifications.csproj" />
+    <Project Path="src/WeChatNotifier.App/WeChatNotifier.App.csproj" />
+    <Project Path="src/WeChatNotifier.Settings/WeChatNotifier.Settings.csproj" />
+    <Project Path="src/WeChatNotifier.Setup/WeChatNotifier.Setup.csproj" />
+    <Project Path="src/WeChatNotifier.ConsoleHost/WeChatNotifier.ConsoleHost.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/WeChatInspector/WeChatInspector.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WeChatNotifier.Tests/WeChatNotifier.Tests.csproj" />
+  </Folder>
+</Solution>

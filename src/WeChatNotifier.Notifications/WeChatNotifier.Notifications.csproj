@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Windows native notifications through the Windows App SDK (AppNotificationManager), unpackaged. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>WeChatNotifier.Notifications</RootNamespace>
+    <WindowsPackageType>None</WindowsPackageType>
+    <!-- Version constants of the referenced runtime (Microsoft.WindowsAppSDK.Release / .Runtime) for the
+         bootstrapper call in WindowsAppRuntime.cs; the hosts disable the SDK's own auto-initializer. -->
+    <WindowsAppSdkIncludeVersionInfo>true</WindowsAppSdkIncludeVersionInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Only the Foundation component (app notifications, app lifecycle, bootstrapper): no WinUI, AI or ML.
+         Versions as shipped together in Windows App SDK 2.5.1 (latest stable). -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.12" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+    <!-- Framework-dependent deployment on the installed Windows App Runtime 2.5.1+ (no self-contained copy). -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WeChatNotifier.Core\WeChatNotifier.Core.csproj" />
+    <ProjectReference Include="..\WeChatNotifier.Diagnostics\WeChatNotifier.Diagnostics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Notification header / Settings icon. Embedded (the SDK's MSIX tooling relocates library content files)
+         and written to %LOCALAPPDATA%\WeChatNotifier\assets at registration. -->
+    <EmbeddedResource Include="Assets\HeaderIcon-*.png" LogicalName="WeChatNotifier.%(Filename)%(Extension)" />
+    <!-- Windows-SDK projects glob images as Content (for MSIX/PRI); this library ships none. -->
+    <Content Remove="Assets\**" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Message model, fingerprints, de-duplication and notification text. No Windows or WeChat dependencies. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WeChatNotifier.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="WeChatNotifier.Tests" />
+  </ItemGroup>
+
+</Project>
