@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WeChatNotifier.Performance</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/WeChatNotifier.Core/WeChatNotifier.Core.csproj" />
+    <ProjectReference Include="../../src/WeChatNotifier.Listener/WeChatNotifier.Listener.csproj" />
+  </ItemGroup>
+</Project>

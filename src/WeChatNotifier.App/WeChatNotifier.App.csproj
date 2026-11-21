@@ -9,7 +9,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>WeChatNotifier.App</RootNamespace>
     <AssemblyName>WeChatNotifier</AssemblyName>
-    <Version>0.8.0</Version>
+    <Version>0.8.1</Version>
     <!-- File description and product name: what Task Manager (processes, Startup apps) shows. -->
     <AssemblyTitle>WeChat Notifier</AssemblyTitle>
     <Product>WeChat Notifier</Product>

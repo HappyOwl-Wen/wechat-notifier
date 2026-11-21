@@ -11,7 +11,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>WeChatNotifier.Setup</RootNamespace>
     <AssemblyName>WeChatNotifierSetup</AssemblyName>
-    <Version>0.8.0</Version>
+    <Version>0.8.1</Version>
     <AssemblyTitle>WeChat Notifier 安装程序</AssemblyTitle>
     <Product>WeChat Notifier</Product>
     <Company>WeChat Notifier</Company>

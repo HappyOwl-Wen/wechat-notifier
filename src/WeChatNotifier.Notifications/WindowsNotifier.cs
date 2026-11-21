@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Windows.AppLifecycle;
@@ -51,7 +50,7 @@ public sealed class WindowsNotifier : IDisposable
 
     private volatile NotificationOptions _options;
     private readonly DiagnosticLog _log;
-    private readonly BlockingCollection<Action> _work = new(new ConcurrentQueue<Action>(), 256);
+    private readonly NotificationWorkQueue _work = new(256);
     private readonly HashSet<string> _shownKeys = new(StringComparer.Ordinal); // conversations with a notification out
     private readonly Queue<string> _shownOrder = new();
 
@@ -221,12 +220,20 @@ public sealed class WindowsNotifier : IDisposable
         if (State != NotifierState.Ready || !Enqueue(ClearImagesNow)) ImageStore.DeleteAll();
     }
 
-    /// <summary>Queues a notification. Returns false when notifications are unavailable or the queue is full.</summary>
+    /// <summary>
+    /// Queues the latest notification for a conversation, replacing its pending payload when possible.
+    /// Returns false when notifications are unavailable or a new queue slot cannot be accepted.
+    /// </summary>
     public bool Show(NotificationContent content)
     {
         if (State != NotifierState.Ready) return false;
+        if (!_work.TryAdd(content))
+        {
+            _log.Warn("toast", "queue full or stopping, notification dropped");
+            return false;
+        }
         if (content.Kind == NotificationKind.Message) RememberShown(content.Tag);
-        return Enqueue(() => ShowNow(content));
+        return true;
     }
 
     /// <summary>Withdraws the conversation's notification (if this run showed one) from Notification Center.</summary>
@@ -295,9 +302,13 @@ public sealed class WindowsNotifier : IDisposable
 
     private void Work()
     {
-        foreach (var action in _work.GetConsumingEnumerable())
+        while (_work.TryTake(out var content, out var action))
         {
-            try { action(); }
+            try
+            {
+                if (content is not null) ShowNow(content);
+                else action!();
+            }
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {
                 Metrics.Failed();

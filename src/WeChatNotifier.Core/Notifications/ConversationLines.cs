@@ -22,14 +22,14 @@ public sealed class ConversationLines
         public bool Known => Text is not null;
     }
 
-    private sealed class Entry
+    private sealed class Entry(LinkedListNode<string> node)
     {
         public readonly List<Line> Lines = new(MaxLines + 1); // oldest first
-        public long LastUsed;
+        public readonly LinkedListNode<string> Node = node;
     }
 
     private readonly Dictionary<string, Entry> _byKey = new(StringComparer.Ordinal);
-    private long _clock;
+    private readonly LinkedList<string> _recency = new(); // oldest first
 
     internal int Count
     {
@@ -69,22 +69,37 @@ public sealed class ConversationLines
     /// <summary>The conversation was read: its next notification starts with an empty list.</summary>
     public void Clear(string key)
     {
-        lock (_byKey) _byKey.Remove(key);
+        lock (_byKey)
+        {
+            if (_byKey.Remove(key, out var entry)) _recency.Remove(entry.Node);
+        }
     }
 
     public void Clear()
     {
-        lock (_byKey) _byKey.Clear();
+        lock (_byKey)
+        {
+            _byKey.Clear();
+            _recency.Clear();
+        }
     }
 
     private Entry Get(string key)
     {
         if (!_byKey.TryGetValue(key, out var entry))
         {
-            if (_byKey.Count >= MaxConversations) _byKey.Remove(_byKey.MinBy(kv => kv.Value.LastUsed).Key);
-            _byKey[key] = entry = new Entry();
+            if (_byKey.Count >= MaxConversations)
+            {
+                _byKey.Remove(_recency.First!.Value);
+                _recency.RemoveFirst();
+            }
+            _byKey[key] = entry = new Entry(_recency.AddLast(key));
         }
-        entry.LastUsed = ++_clock;
+        else if (!ReferenceEquals(_recency.Last, entry.Node))
+        {
+            _recency.Remove(entry.Node);
+            _recency.AddLast(entry.Node);
+        }
         return entry;
     }
 

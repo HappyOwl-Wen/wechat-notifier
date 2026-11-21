@@ -10,6 +10,7 @@
     <Project Path="src/WeChatNotifier.ConsoleHost/WeChatNotifier.ConsoleHost.csproj" />
   </Folder>
   <Folder Name="/tools/">
+    <Project Path="tools/WeChatNotifier.Performance/WeChatNotifier.Performance.csproj" />
     <Project Path="tools/WeChatInspector/WeChatInspector.csproj" />
   </Folder>
   <Folder Name="/tests/">

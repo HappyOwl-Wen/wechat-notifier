@@ -23,6 +23,7 @@ internal sealed class SessionTracker
     internal const int MaxConversations = 500;
 
     private readonly Dictionary<string, State> _states = new(StringComparer.Ordinal);
+    private readonly LinkedList<string> _recency = new(); // oldest first; O(1) touch and eviction
     private long _tick;
 
     public bool HasBaseline { get; private set; }
@@ -45,14 +46,13 @@ internal sealed class SessionTracker
     {
         _tick++;
         var changes = new List<SessionChange>();
-        var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var cell in cells)
         {
-            if (cell.Title.Length == 0 || !seen.Add(cell.Title)) continue;
+            if (cell.Title.Length == 0) continue;
 
             if (!_states.TryGetValue(cell.Title, out var st))
             {
-                st = new State();
+                st = new State(_recency.AddLast(cell.Title));
                 _states[cell.Title] = st;
                 Update(st, cell, contentVisible);
                 // A conversation scrolled into the visible rows because it just received messages.
@@ -60,6 +60,7 @@ internal sealed class SessionTracker
                     changes.Add(new SessionChange(cell, cell.Unread, "appeared-with-unread", st.Muted));
                 continue;
             }
+            if (st.LastSeen == _tick) continue; // duplicate row in this read; no temporary HashSet
 
             if (st.Unread > 0 && cell.Unread == 0)
             {
@@ -106,6 +107,8 @@ internal sealed class SessionTracker
     public void Reset()
     {
         _states.Clear();
+        _recency.Clear();
+        _tick = 0;
         HasBaseline = false;
     }
 
@@ -113,6 +116,11 @@ internal sealed class SessionTracker
     {
         st.Unread = cell.Unread;
         st.LastSeen = _tick;
+        if (!ReferenceEquals(_recency.Last, st.Node))
+        {
+            _recency.Remove(st.Node);
+            _recency.AddLast(st.Node);
+        }
         if (!contentVisible) return;
         st.Preview = cell.Preview;
         st.Time = cell.Time;
@@ -121,13 +129,16 @@ internal sealed class SessionTracker
 
     private void Trim()
     {
-        if (_states.Count <= MaxConversations) return;
-        foreach (var key in _states.OrderBy(kv => kv.Value.LastSeen).Take(_states.Count - MaxConversations).Select(kv => kv.Key).ToList())
-            _states.Remove(key);
+        while (_states.Count > MaxConversations)
+        {
+            _states.Remove(_recency.First!.Value);
+            _recency.RemoveFirst();
+        }
     }
 
-    private sealed class State
+    private sealed class State(LinkedListNode<string> node)
     {
+        public readonly LinkedListNode<string> Node = node;
         public int Unread;
         public string? Preview;
         public string? Time;

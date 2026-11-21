@@ -8,7 +8,7 @@
 
 <sub>示例中的会话和消息是虚构的。</sub>
 
-当前版本 **0.8.0**，每个版本的变化见 [CHANGELOG.md](CHANGELOG.md)。
+当前版本 **0.8.1**，每个版本的变化见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 功能
 
@@ -96,24 +96,25 @@ dotnet test --project tests\WeChatNotifier.Tests -c Release  # 单元测试
 .\scripts\package.ps1                                        # 安装程序 → artifacts\WeChatNotifierSetup-<版本>.exe
 ```
 
-开发工具（控制台宿主、WeChatInspector）和文档索引见 [docs/development.md](docs/development.md)。推送到 GitHub 后，[GitHub Actions](.github/workflows/build.yml) 会构建、测试、打包；推送 `v*` 标签时把安装程序发布到 Releases。
+开发工具（控制台宿主、WeChatInspector、性能微基准）和文档索引见 [docs/development.md](docs/development.md)。推送到 GitHub 后，[GitHub Actions](.github/workflows/build.yml) 会构建、测试、打包；推送 `v*` 标签时把安装程序发布到 Releases。
 
 ## 项目结构
 
 ```
 src/
-  WeChatNotifier.Core           消息模型、去重、通知文字组装、图像处理、设置（纯逻辑）
-  WeChatNotifier.Diagnostics    隐私安全的日志、指标、脱敏
-  WeChatNotifier.Listener       发现微信、Shell hook、UI Automation 读取、会话差分、点击后打开会话
-  WeChatNotifier.Notifications  Windows App SDK 原生通知：注册、显示、撤回、点击
-  WeChatNotifier.App            后台程序 WeChatNotifier.exe：托盘、开机启动、单实例
-  WeChatNotifier.Settings       设置窗口 WeChatNotifier.Settings.exe（WinUI 3，只在打开时运行）
-  WeChatNotifier.Setup          安装程序 WeChatNotifierSetup.exe（.NET Framework 4.7.2，内含程序文件和 Windows App Runtime）
-  WeChatNotifier.ConsoleHost    控制台宿主（诊断用，不随安装程序发布）
-tests/WeChatNotifier.Tests      单元测试（xUnit v3）
-tools/WeChatInspector           研究和诊断工具：检查微信的界面结构
-scripts/                        build.ps1、package.ps1、make-icons.ps1
-docs/                           架构、限制、隐私、性能、测试清单、开发指南
+  WeChatNotifier.Core            消息模型、去重、通知文字组装、通知排队、图像处理、设置（纯逻辑）
+  WeChatNotifier.Diagnostics     隐私安全的日志、指标、脱敏
+  WeChatNotifier.Listener        发现微信、Shell hook、UI Automation 读取、会话差分、点击后打开会话
+  WeChatNotifier.Notifications   Windows App SDK 原生通知：注册、显示、撤回、点击
+  WeChatNotifier.App             后台程序 WeChatNotifier.exe：托盘、开机启动、单实例
+  WeChatNotifier.Settings        设置窗口 WeChatNotifier.Settings.exe（WinUI 3，只在打开时运行）
+  WeChatNotifier.Setup           安装程序 WeChatNotifierSetup.exe（.NET Framework 4.7.2，内含程序文件和 Windows App Runtime）
+  WeChatNotifier.ConsoleHost     控制台宿主（诊断用，不随安装程序发布）
+tests/WeChatNotifier.Tests       单元测试（xUnit v3）
+tools/WeChatInspector            研究和诊断工具：检查微信的界面结构
+tools/WeChatNotifier.Performance 性能微基准：会话缓存、PNG、通知合并（只用合成数据，不连接微信）
+scripts/                         build.ps1、package.ps1、make-icons.ps1
+docs/                            架构、限制、隐私、性能、测试清单、开发指南
 ```
 
 ## 声明

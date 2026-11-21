@@ -168,4 +168,35 @@ public class SessionTrackerTests
             t.Apply(Enumerable.Range(0, 30).Select(i => Cell($"c{batch}-{i}")).ToList(), true, null, false);
         Assert.True(t.Count <= SessionTracker.MaxConversations);
     }
+
+    [Fact]
+    public void Active_conversations_keep_their_state_when_the_oldest_is_evicted()
+    {
+        var t = Baseline(Enumerable.Range(0, SessionTracker.MaxConversations).Select(i => Cell($"c{i}", unread: 1)).ToArray());
+        t.Apply([Cell("c0", unread: 1)], true, null, true);
+        t.Apply([Cell("new")], true, null, true);
+        Assert.Empty(t.Apply([Cell("c0", unread: 1)], true, null, true));
+        var evicted = Assert.Single(t.Apply([Cell("c1", unread: 1)], true, null, true));
+        Assert.Equal("appeared-with-unread", evicted.Reason);
+    }
+
+    [Fact]
+    public void Duplicate_rows_are_observed_once_per_read()
+    {
+        var t = Baseline(Cell("Alice"));
+        var change = Assert.Single(t.Apply([Cell("Alice", unread: 1), Cell("Alice", unread: 2)], true, null, true));
+        Assert.Equal(1, change.Cell.Unread);
+        Assert.Empty(t.Apply([Cell("Alice", unread: 1)], true, null, true));
+    }
+
+    [Fact]
+    public void Reset_discards_recency_and_builds_a_new_baseline()
+    {
+        var t = Baseline(Cell("Alice", unread: 4));
+        t.Reset();
+        Assert.Equal(0, t.Count);
+        Assert.False(t.HasBaseline);
+        Assert.Empty(t.Apply([Cell("Alice", unread: 8)], true, null, true));
+        Assert.Single(t.Apply([Cell("Alice", unread: 9)], true, null, true));
+    }
 }

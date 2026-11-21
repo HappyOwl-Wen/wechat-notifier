@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="WeChatNotifier.Tests" />
+    <InternalsVisibleTo Include="WeChatNotifier.Notifications" />
+    <InternalsVisibleTo Include="WeChatNotifier.Performance" />
   </ItemGroup>
 
 </Project>

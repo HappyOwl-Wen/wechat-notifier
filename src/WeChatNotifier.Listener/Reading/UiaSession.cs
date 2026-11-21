@@ -81,11 +81,13 @@ internal sealed class UiaSession
         IUIAutomationElementArray? arr = null;
         try { arr = el.GetCachedChildren(); }
         catch (COMException) { }
-        for (int i = 0; i < (arr?.Length ?? 0); i++) yield return arr!.GetElement(i);
+        int count = arr?.Length ?? 0;
+        for (int i = 0; i < count; i++) yield return arr!.GetElement(i);
     }
 
     public static IEnumerable<IUIAutomationElement> Elements(IUIAutomationElementArray? arr)
     {
-        for (int i = 0; i < (arr?.Length ?? 0); i++) yield return arr!.GetElement(i);
+        int count = arr?.Length ?? 0;
+        for (int i = 0; i < count; i++) yield return arr!.GetElement(i);
     }
 }

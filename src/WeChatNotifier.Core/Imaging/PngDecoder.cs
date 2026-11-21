@@ -22,9 +22,9 @@ public static class PngDecoder
         int pos = Signature.Length;
         while (true)
         {
-            if (pos + 12 > png.Length) return null;
+            if (png.Length - pos < 12) return null;
             int length = BinaryPrimitives.ReadInt32BigEndian(png[pos..]);
-            if (length < 0 || pos + 12 + length > png.Length) return null;
+            if (length < 0 || length > png.Length - pos - 12) return null;
             var type = png.Slice(pos + 4, 4);
             var data = png.Slice(pos + 8, length);
             uint crc = BinaryPrimitives.ReadUInt32BigEndian(png[(pos + 8 + length)..]);
@@ -46,35 +46,34 @@ public static class PngDecoder
         if (width == 0) return null;
 
         int stride = width * 4;
-        var raw = new byte[height * (stride + 1)];
+        // Inflate one scanline at a time: no second image-sized buffer alongside the decoded bitmap.
+        var bitmap = new Bitmap32(width, height);
+        var previous = new byte[stride];
+        var line = new byte[stride];
         try
         {
             compressed.Position = 0;
             using var zlib = new ZLibStream(compressed, CompressionMode.Decompress);
-            zlib.ReadExactly(raw);
+            for (int y = 0; y < height; y++)
+            {
+                int filter = zlib.ReadByte();
+                if (filter is < 0 or > 4) return null;
+                zlib.ReadExactly(line);
+                if (!Unfilter(filter, line, previous)) return null;
+                for (int x = 0; x < stride; x += 4)
+                {
+                    int o = y * stride + x;
+                    bitmap.Pixels[o] = line[x + 2];     // B
+                    bitmap.Pixels[o + 1] = line[x + 1]; // G
+                    bitmap.Pixels[o + 2] = line[x];     // R
+                    bitmap.Pixels[o + 3] = line[x + 3]; // A
+                }
+                (previous, line) = (line, previous);
+            }
         }
         catch (Exception ex) when (ex is InvalidDataException or EndOfStreamException)
         {
             return null;
-        }
-
-        var bitmap = new Bitmap32(width, height);
-        var previous = new byte[stride];
-        var line = new byte[stride];
-        for (int y = 0; y < height; y++)
-        {
-            int filter = raw[y * (stride + 1)];
-            Array.Copy(raw, y * (stride + 1) + 1, line, 0, stride);
-            if (!Unfilter(filter, line, previous)) return null;
-            for (int x = 0; x < stride; x += 4)
-            {
-                int o = y * stride + x;
-                bitmap.Pixels[o] = line[x + 2];     // B
-                bitmap.Pixels[o + 1] = line[x + 1]; // G
-                bitmap.Pixels[o + 2] = line[x];     // R
-                bitmap.Pixels[o + 3] = line[x + 3]; // A
-            }
-            (previous, line) = (line, previous);
         }
         return bitmap;
     }

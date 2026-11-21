@@ -103,6 +103,22 @@ public class ConversationLinesTests
     }
 
     [Fact]
+    public void Clearing_entries_keeps_eviction_consistent()
+    {
+        var recent = new ConversationLines();
+        for (int i = 0; i < ConversationLines.MaxConversations; i++) recent.Add($"k{i}", "old", 1, 0);
+        recent.Clear("k0");
+        recent.Clear("missing");
+        recent.Add("k0", "fresh", 1, 0);
+        recent.Add("new", "new", 1, 0);
+        Assert.Equal(["fresh", "next"], Texts(recent.Add("k0", "next", 1, 0)));
+        Assert.Equal(["reset"], Texts(recent.Add("k1", "reset", 1, 0)));
+        recent.Clear();
+        Assert.Equal(0, recent.Count);
+        Assert.Equal(["only"], Texts(recent.Add("k0", "only", 1, 0)));
+    }
+
+    [Fact]
     public void Notification_lists_the_earlier_messages_above_the_newest()
     {
         var recent = new ConversationLines();

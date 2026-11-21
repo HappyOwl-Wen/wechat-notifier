@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="WeChatNotifier.Tests" />
+    <InternalsVisibleTo Include="WeChatNotifier.Performance" />
     <!-- trayprobe exercises ShellTray on the real taskbar. -->
     <InternalsVisibleTo Include="WeChatInspector" />
   </ItemGroup>

@@ -1,19 +1,19 @@
 # 测试清单
 
-自动化部分已经完成：229 个单元测试、真实微信上的合成触发自测、测试通知（含生成的头像）进入通知中心的核查、托盘图标查找（`trayprobe`）、空闲 CPU/内存测量、网络端点核查，后台程序的启动/第二次启动/`--exit`/模拟 Explorer 重启，设置窗口的打开、四页内容、设置往返和状态页（结果见 [performance.md](performance.md)），以及安装程序的安装、更新和卸载流程。下面这些需要真实的收消息、点击和登录，只能由你来做。
+自动化部分已经完成：251 个单元测试、真实微信上的合成触发自测、测试通知（含生成的头像）进入通知中心的核查、托盘图标查找（`trayprobe`）、空闲 CPU/内存测量、网络端点核查，后台程序的启动/第二次启动/`--exit`/模拟 Explorer 重启，设置窗口的打开、四页内容、设置往返和状态页（结果见 [performance.md](performance.md)），以及安装程序的安装、更新和卸载流程。下面这些需要真实的收消息、点击和登录，只能由你来做。
 
-## PHASE 6：安装程序 `WeChatNotifierSetup-0.8.0.exe`
+## PHASE 6：安装程序 `WeChatNotifierSetup-0.8.1.exe`
 
-在仓库里生成：`.\scripts\package.ps1` → `artifacts\WeChatNotifierSetup-0.8.0.exe`（约 91 MB）。电脑上不需要事先装任何东西：.NET 运行时在程序文件里，缺 Windows App Runtime 时安装程序从 exe 里装上。
+在仓库里生成：`.\scripts\package.ps1` → `artifacts\WeChatNotifierSetup-0.8.1.exe`（约 91 MB）。电脑上不需要事先装任何东西：.NET 运行时在程序文件里，缺 Windows App Runtime 时安装程序从 exe 里装上。
 
 | # | 做法 | 期望 |
 |---|---|---|
 | I1 | 双击安装程序 | 询问是否安装，显示安装位置 `%LOCALAPPDATA%\Programs\WeChatNotifier`；不弹 UAC（不需要管理员）。缺 Windows App Runtime 时多一句「还会为你安装 Windows App Runtime」 |
 | I2 | 确认安装 | 显示进度窗口（要装 Windows App Runtime 时约一分钟，否则几秒）；正在运行的旧版本先退出；完成提示；右下角弹出「已在后台运行」通知；开始菜单里有「WeChat Notifier」 |
-| I3 | 设置 → 应用 → 已安装的应用 | 有「WeChat Notifier 0.8.0」，大小约 113 MB |
+| I3 | 设置 → 应用 → 已安装的应用 | 有「WeChat Notifier 0.8.1」，大小约 113 MB |
 | I4 | 开始菜单打开「WeChat Notifier」 | 打开设置窗口（程序已在运行时） |
 | I5 | 重新登录或重启 | 启动的是安装后的版本（任务管理器 → 详细信息 → WeChatNotifier.exe 的路径在 `AppData\Local\Programs` 下） |
-| I6 | 再运行一次安装程序 | 提示「更新到 0.8.0」；设置保留；更新后自动重新启动 |
+| I6 | 再运行一次安装程序 | 提示「更新到 0.8.1」；设置保留；更新后自动重新启动 |
 | I7 | 设置 → 应用 → 卸载 | 询问是否卸载、是否同时删除设置和日志；之后开始菜单项、开机启动项、通知中心里的通知、程序文件夹都没有了 |
 | I8 | 右键安装程序 →「以管理员身份运行」 | 提示不要以管理员身份运行，不安装 |
 | I9 | （可选）在一台没装过 .NET 和 Windows App Runtime 的电脑上运行安装程序，或者在本机新建一个 Windows 用户、用它登录后运行 | 确认里说明要装 Windows App Runtime；不联网也能装完；通知正常（托盘菜单 → 发送测试通知） |

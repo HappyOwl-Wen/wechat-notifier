@@ -79,6 +79,8 @@ $wi = ".\tools\WeChatInspector\bin\Release\net10.0-windows\WeChatInspector.exe"
 
 ## 文档
 
+性能微基准：`dotnet run --project tools/WeChatNotifier.Performance -c Release`。只处理合成数据，测量会话缓存和 PNG 的耗时/分配量，并检查通知突发合并；不连接微信、不弹通知。前后对比、环境设置和测量边界见 [performance.md](performance.md)。
+
 | 文件 | 内容 |
 |---|---|
 | [wechat-ui-analysis.md](wechat-ui-analysis.md) | PHASE 0：微信 4.1 的 UI Automation 结构、事件、可读到什么 |

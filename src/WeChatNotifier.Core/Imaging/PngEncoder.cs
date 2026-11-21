@@ -14,7 +14,8 @@ public static class PngEncoder
 
     public static byte[] Encode(Bitmap32 bitmap)
     {
-        using var png = new MemoryStream();
+        using var compressed = Compress(bitmap);
+        using var png = new MemoryStream(checked((int)compressed.Length + 57)); // signature and three chunk headers
         png.Write(Signature);
 
         Span<byte> header = stackalloc byte[13];
@@ -26,17 +27,17 @@ public static class PngEncoder
         header[11] = 0; // adaptive filtering
         header[12] = 0; // no interlace
         WriteChunk(png, "IHDR"u8, header);
-        WriteChunk(png, "IDAT"u8, Compress(bitmap));
+        WriteChunk(png, "IDAT"u8, compressed.GetBuffer().AsSpan(0, (int)compressed.Length));
         WriteChunk(png, "IEND"u8, []);
         return png.ToArray();
     }
 
-    private static byte[] Compress(Bitmap32 bitmap)
+    private static MemoryStream Compress(Bitmap32 bitmap)
     {
         int stride = bitmap.Width * 4;
         var line = new byte[stride + 1];
         var p = bitmap.Pixels;
-        using var output = new MemoryStream();
+        var output = new MemoryStream();
         using (var zlib = new ZLibStream(output, CompressionLevel.Fastest, leaveOpen: true))
         {
             for (int y = 0; y < bitmap.Height; y++)
@@ -62,7 +63,7 @@ public static class PngEncoder
                 zlib.Write(line);
             }
         }
-        return output.ToArray();
+        return output; // expose the compressed buffer without copying it
     }
 
     private static void WriteChunk(Stream png, ReadOnlySpan<byte> type, ReadOnlySpan<byte> data)

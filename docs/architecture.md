@@ -94,6 +94,8 @@ MessageEvent（Listener 线程）
        而且不理会 hint-maxLines（2026-10-02 实测：前面一条长消息换行后，最新一条整个不见了）。宽度估计：
        正文每个汉字 14 有效像素，头像旁一行实测 19 个汉字（266 epx），估计按 256 epx；Windows「文字大小」设置
        （HKCU\Software\Microsoft\Accessibility\TextScaleFactor）按比例缩小
+       按 (Group, Tag) 合并尚未发送的同一会话通知：保留最新的完整内容（已有最近 3 行），省去过时的 Show；
+       已读撤回、设置/图片控制动作和测试通知分隔合并范围；最多 256 个待处理工作，空闲时阻塞
        AppNotificationManager.Show
 Listener 读到某会话未读数回到 0 → ConversationRead → RemoveByTagAndGroupAsync（只撤回本次运行显示过的）
 ```

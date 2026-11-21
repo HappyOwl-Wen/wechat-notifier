@@ -9,7 +9,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>WeChatNotifier.Settings</RootNamespace>
     <AssemblyName>WeChatNotifier.Settings</AssemblyName>
-    <Version>0.6.4</Version>
+    <Version>0.8.1</Version>
     <AssemblyTitle>WeChat Notifier 设置</AssemblyTitle>
     <Product>WeChat Notifier</Product>
     <Company>WeChat Notifier</Company>
