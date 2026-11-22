@@ -19,10 +19,17 @@ dotnet test --project tests\WeChatNotifier.Tests -c Release
 - `build.ps1` 会先让构建目录里正在运行的 `WeChatNotifier.exe` 退出（否则文件被占用），构建成功后再启动它（`-NoRestart` 不启动）。
 - `package.ps1` 发布后台程序和设置窗口（win-x64，自带 .NET 运行时，不裁剪）并压成 zip，连同 Windows App Runtime 的 MSIX 包（取自 NuGet 包 `Microsoft.WindowsAppSDK.Runtime`，版本和 `WeChatNotifier.Notifications.csproj` 引用的一致）内嵌进安装程序 `WeChatNotifierSetup.exe`，并打印大小和 SHA-256。
 - 安装程序以 .NET Framework 4.7.2 为目标（Windows 10 1809 起自带），所以任何电脑都能直接运行。它和后台程序共用的几个源文件（`InstallLayout`、`ControlProtocol`、`StartupCommand`、`StartupRegistration`）以链接方式编进安装程序，改它们时要保证在 .NET Framework 上也能编译。
-- 版本号在 `src/WeChatNotifier.App/WeChatNotifier.App.csproj`、`src/WeChatNotifier.Setup/WeChatNotifier.Setup.csproj` 和三个 `app.manifest` 里，一起改。
+- 版本号在随安装程序发布的三个项目里：`src/WeChatNotifier.App`、`src/WeChatNotifier.Settings`、`src/WeChatNotifier.Setup` 各自的 `.csproj`（`<Version>`）和 `app.manifest`（`assemblyIdentity` 的 `version`，多一位 `.0`），六处一起改。`scripts\release-notes.ps1` 会检查它们是否一致。
 - 图标由 `scripts\make-icons.ps1` 生成（Windows PowerShell + System.Drawing），结果已提交：`src/WeChatNotifier.App/Assets/AppIcon.ico` 和 `src/WeChatNotifier.Notifications/Assets/HeaderIcon-*.png`。
 
-推送到 GitHub 后，`.github/workflows/build.yml` 在每次推送时构建、跑测试并打包；推送 `v*` 标签（例如 `v0.8.0`）时，把安装程序发布到 GitHub Releases。
+推送到 GitHub 后，`.github/workflows/build.yml` 在每次推送时构建、跑测试、打包，并用 `scripts\release-notes.ps1` 写发布说明：在 `scripts\release-notes.template.md` 里填上安装程序的文件名、大小、SHA-256，以及 `CHANGELOG.md` 里这个版本的一节（相对链接换成指向该标签的绝对链接）。六处版本号不一致，或者 `CHANGELOG.md` 里没有这个版本时，构建失败。推送 `v*` 标签（例如 `v0.8.1`）时，把安装程序连同这份说明发布到 GitHub Releases。
+
+发布新版本：
+
+1. 改六处版本号；在 `CHANGELOG.md` 顶部写这个版本的一节，标题形如 `## 0.8.2（2026-12-01）`
+2. 本地预览：`.\scripts\package.ps1`，再 `.\scripts\release-notes.ps1`
+3. 提交、推送 main，等 Actions 通过
+4. `git tag -a v0.8.2 -m "WeChat Notifier 0.8.2"`，`git push origin v0.8.2`：Actions 发布 Release
 
 ## 从构建目录运行
 

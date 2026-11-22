@@ -96,7 +96,7 @@ dotnet test --project tests\WeChatNotifier.Tests -c Release  # 单元测试
 .\scripts\package.ps1                                        # 安装程序 → artifacts\WeChatNotifierSetup-<版本>.exe
 ```
 
-开发工具（控制台宿主、WeChatInspector、性能微基准）和文档索引见 [docs/development.md](docs/development.md)。推送到 GitHub 后，[GitHub Actions](.github/workflows/build.yml) 会构建、测试、打包；推送 `v*` 标签时把安装程序发布到 Releases。
+开发工具（控制台宿主、WeChatInspector、性能微基准）和文档索引见 [docs/development.md](docs/development.md)。推送到 GitHub 后，[GitHub Actions](.github/workflows/build.yml) 会构建、测试、打包；推送 `v*` 标签时把安装程序发布到 Releases，说明取自 `CHANGELOG.md` 里这个版本的一节。
 
 ## 项目结构
 

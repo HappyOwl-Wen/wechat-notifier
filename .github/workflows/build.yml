@@ -1,4 +1,5 @@
-# Builds, tests and packages on every push; a version tag (v0.8.0, ...) also publishes the installer as a release.
+# Builds, tests and packages on every push; a version tag (v0.8.1, ...) also publishes the installer as a release,
+# with that version's CHANGELOG.md section as the release notes (scripts/release-notes.ps1).
 name: build
 
 on:
@@ -18,9 +19,9 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -34,10 +35,21 @@ jobs:
         shell: pwsh
         run: ./scripts/package.ps1
 
-      - uses: actions/upload-artifact@v4
+      # On every build, not only for tags: mismatched version numbers or a missing CHANGELOG.md section fail here,
+      # before a release tag is pushed. The log shows the notes.
+      - name: Write the release notes
+        shell: pwsh
+        run: |
+          ./scripts/release-notes.ps1 -Tag "${{ github.ref_type == 'tag' && github.ref_name || '' }}" -Out artifacts/release-notes.md
+          [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+          Get-Content artifacts/release-notes.md -Encoding utf8
+
+      - uses: actions/upload-artifact@v7
         with:
           name: WeChatNotifierSetup
-          path: artifacts/WeChatNotifierSetup-*.exe
+          path: |
+            artifacts/WeChatNotifierSetup-*.exe
+            artifacts/release-notes.md
           if-no-files-found: error
 
   release:
@@ -47,7 +59,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: WeChatNotifierSetup
 
@@ -58,4 +70,4 @@ jobs:
           gh release create "${{ github.ref_name }}" WeChatNotifierSetup-*.exe
           --repo "${{ github.repository }}"
           --title "WeChat Notifier ${{ github.ref_name }}"
-          --notes "下载下面 Assets 里的 WeChatNotifierSetup-*.exe，双击即可安装，不需要事先安装任何东西。每个版本的变化见 CHANGELOG.md。"
+          --notes-file release-notes.md
